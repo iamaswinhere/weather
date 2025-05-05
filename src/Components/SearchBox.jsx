@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { getWeatherByCity } from '../utils/fetchWeather';
-import '../Styles/Searchbox.css'
+import { getWeatherByCity, getForecastByCoordinates } from '../utils/fetchWeather';
 
-const SearchBox = ({ setWeatherData }) => {
+const SearchBox = ({ setWeatherData, setForecastData, setCoordinates }) => {
   const [city, setCity] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -18,6 +17,14 @@ const SearchBox = ({ setWeatherData }) => {
       if (data.cod === 200) {
         setWeatherData(data);
         setCity('');
+
+        // ✅ Extract lon and lat from the response
+        const { lon, lat } = data.coord;
+        setCoordinates({ lon, lat }); // Update coordinates in App
+
+        // ✅ Fetch forecast using coordinates
+        const forecastData = await getForecastByCoordinates(lat, lon);
+        setForecastData(forecastData);
       } else {
         setError('City not found!');
       }
@@ -30,24 +37,20 @@ const SearchBox = ({ setWeatherData }) => {
   };
 
   return (
-    <div className="searchbox-container">
-      <form onSubmit={handleSearch} className="searchbox-form">
+    <div className="container mt-4">
+      <form onSubmit={handleSearch} className="d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center">
         <input
           type="text"
-          className="searchbox-input"
+          className="form-control w-75 w-md-50"
           placeholder="Enter city name..."
           value={city}
           onChange={(e) => setCity(e.target.value)}
         />
-        <button
-          className="searchbox-button"
-          type="submit"
-          disabled={loading}
-        >
+        <button className="btn btn-primary px-4" type="submit" disabled={loading}>
           {loading ? 'Searching...' : 'Search'}
         </button>
       </form>
-      {error && <p className="searchbox-error">{error}</p>}
+      {error && <p className="text-danger text-center mt-2">{error}</p>}
     </div>
   );
 };

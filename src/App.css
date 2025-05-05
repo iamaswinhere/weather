@@ -13,7 +13,7 @@ body {
   align-items: center;
   padding: 2rem 1rem;
   min-height: 100vh;
-  background: linear-gradient(to right, #1A1A2E, #16213E);
+  background: linear-gradient(to right, #1A1A2E, #16213E) !important;
 }
 
 input.form-control {
